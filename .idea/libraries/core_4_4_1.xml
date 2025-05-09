@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="core-4.4.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/core-4.4.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
