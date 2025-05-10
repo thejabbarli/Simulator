@@ -8,7 +8,6 @@ public class CircularWall extends Wall {
     private final float radius;
     private final float elasticity;
 
-
     public CircularWall(PVector center, float radius, float thickness, float elasticity) {
         super(thickness);
         this.center = center.copy();
@@ -27,8 +26,6 @@ public class CircularWall extends Wall {
         // ✅ Bounce when inside shell region
         return distance >= innerLimit && distance <= outerLimit;
     }
-
-
 
     @Override
     public void resolveCollision(Ball ball) {
@@ -62,9 +59,7 @@ public class CircularWall extends Wall {
         ball.setVelocity(reflection);
 
         ball.markBounce();
-
     }
-
 
     @Override
     public void display(PApplet app) {
@@ -77,8 +72,8 @@ public class CircularWall extends Wall {
     public float getRadius() {
         return radius;
     }
+
     public PVector getCenter() {
         return center.copy();
     }
-
 }

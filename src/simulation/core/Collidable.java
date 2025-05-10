@@ -1,6 +1,6 @@
-    package simulation.core;
+package simulation.core;
 
-    public interface Collidable {
-        boolean checkCollision(Ball ball);
-        void resolveCollision(Ball ball);
-    }
+public interface Collidable {
+    boolean checkCollision(Ball ball);
+    void resolveCollision(Ball ball);
+}

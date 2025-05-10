@@ -2,17 +2,18 @@ package simulation.effects;
 
 import processing.core.PVector;
 import simulation.core.Ball;
-import simulation.core.Collidable;
 
-public class BounceSpeedBoostEffect {
+public class BounceSpeedBoostEffect implements BallEffect {
     private float lastYVelocity = 0;
     private float boostFactor;
+    private boolean enabled = true;
 
     public BounceSpeedBoostEffect(float boostFactor) {
         this.boostFactor = boostFactor;
     }
 
-    public void apply(Ball ball, Collidable collidable) {
+    @Override
+    public void apply(Ball ball) {
         float currentY = ball.getVelocity().y;
         boolean isBouncing = (lastYVelocity > 0) && (currentY < 0);
 
@@ -33,5 +34,15 @@ public class BounceSpeedBoostEffect {
 
     public float getBoostFactor() {
         return boostFactor;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

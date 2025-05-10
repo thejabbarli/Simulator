@@ -1,25 +1,27 @@
 package simulation.effects;
 
 import simulation.core.Ball;
-import simulation.core.Collidable;
 
-public class BounceGrowthEffect {
+public class BounceGrowthEffect implements BallEffect {
     private float growthAmount;
-    private MaxSizeStopEffect sizeLimiter;
+    private boolean enabled = true;
+    private final MaxSizeChecker sizeChecker;
 
-    public BounceGrowthEffect(float growthAmount, MaxSizeStopEffect limiter) {
+    public BounceGrowthEffect(float growthAmount, MaxSizeChecker sizeChecker) {
         this.growthAmount = growthAmount;
-        this.sizeLimiter = limiter;
+        this.sizeChecker = sizeChecker;
     }
 
-    public void apply(Ball ball, Collidable collidable) {
-        if (ball.hasJustBounced()) {
-            if (MaxSizeStopEffect.canGrow(ball, growthAmount, sizeLimiter.getWallRadius(), sizeLimiter.getWallThickness())) {
-                ball.setRadius(ball.getRadius() + growthAmount);
-                System.out.println("✅ Bounce! New radius: " + ball.getRadius());
-            } else {
-                System.out.println("🛑 Max size reached. Growth blocked.");
-            }
+    @Override
+    public void apply(Ball ball) {
+        if (!ball.hasJustBounced()) return;
+
+        float effectiveRadius = ball.getEffectiveRadius();
+        if (sizeChecker.canGrow(ball, effectiveRadius, growthAmount)) {
+            ball.setRadius(ball.getRadius() + growthAmount);
+            System.out.println("✅ Bounce! New radius: " + ball.getRadius());
+        } else {
+            System.out.println("🛑 Max size reached. Growth blocked.");
         }
     }
 
@@ -29,5 +31,15 @@ public class BounceGrowthEffect {
 
     public float getGrowthAmount() {
         return growthAmount;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

@@ -24,5 +24,10 @@ public class PhysicsEngine {
         }
     }
 
-
+    public PVector getGravity() {
+        return this.gravity;
+    }
+    public void setGravity(float gravityStrength) {
+        this.gravity.set(0, gravityStrength);
+    }
 }

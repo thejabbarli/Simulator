@@ -3,81 +3,61 @@ package simulation.effects;
 import processing.core.PVector;
 import simulation.core.Ball;
 
-public class MaxSizeStopEffect {
-    private float wallRadius;
-    private float wallThickness;
+public class MaxSizeStopEffect implements BallEffect {
+    private final PVector wallCenter;
+    private final MaxSizeChecker sizeChecker;
+    private float growthAmount;
     private boolean shouldStop;
     private boolean shouldShrink;
     private float shrinkRate;
-    private boolean enforceWallBoundaryLimit;
-    private float growthAmount;
-
+    private boolean enabled = true;
 
     public MaxSizeStopEffect(
-
-            float wallRadius,
-            float wallThickness,
-            float growthAmount, // <--- Add this
+            PVector wallCenter,
+            MaxSizeChecker sizeChecker,
+            float growthAmount,
             boolean shouldStop,
             boolean shouldShrink,
-            float shrinkRate,
-            boolean enforceWallBoundaryLimit
-
-
+            float shrinkRate
     ) {
-        this.wallRadius = wallRadius;
-        this.wallThickness = wallThickness;
-        this.growthAmount = growthAmount; // <--- Add this
+        this.wallCenter = wallCenter;
+        this.sizeChecker = sizeChecker;
+        this.growthAmount = growthAmount;
         this.shouldStop = shouldStop;
         this.shouldShrink = shouldShrink;
         this.shrinkRate = shrinkRate;
-        this.enforceWallBoundaryLimit = enforceWallBoundaryLimit;
     }
 
-
-    public void apply(Ball ball, PVector wallCenter) {
+    @Override
+    public void apply(Ball ball) {
         if (!ball.hasJustBounced()) return;
 
-        float current = ball.getEffectiveRadius();
-        float future = current + growthAmount;
+        float effectiveRadius = ball.getEffectiveRadius();
+        float wallInner = sizeChecker.getWallRadius() - sizeChecker.getWallThickness() / 2f;
 
-        float wallInner = wallRadius - wallThickness / 2f;  // correct: center of wall stroke
-        System.out.printf("🧪 GROWTH CHECK → current=%.2f, future=%.2f, wallInner=%.2f → ",
-                current, future, wallInner);
+        // Check if we'll exceed the wall boundary after growth
+        if (effectiveRadius + growthAmount >= wallInner) {
+            System.out.println("❌ Max size reached - ball at limits");
 
-        if (future >= wallInner) {
-            System.out.println("❌ BLOCKED");
+            if (shouldStop) {
+                // Center and lock the ball at max allowed size
+                ball.setPosition(wallCenter.copy());
+                float adjustedRadius = wallInner - ball.getStrokeThickness() / 2f;
+                ball.setRadius(adjustedRadius);
+                ball.lockMotion();
 
-            ball.setPosition(wallCenter.copy());
-
-            float adjustedRadius = wallInner - ball.getStrokeThickness() / 2f;
-            ball.setRadius(adjustedRadius);
-
-            ball.lockMotion();
-
-            System.out.printf("🔒 Ball locked in center. Final radius = %.2f, Effective = %.2f, Target = %.2f\n",
-                    ball.getRadius(), ball.getEffectiveRadius(), wallInner);
-        } else {
-            System.out.println("✅ ALLOWED");
+                System.out.printf("🔒 Ball locked in center. Final radius = %.2f, Effective = %.2f, Target = %.2f\n",
+                        ball.getRadius(), ball.getEffectiveRadius(), wallInner);
+            } else if (shouldShrink) {
+                // Shrink the ball instead of locking
+                float newRadius = ball.getRadius() - shrinkRate;
+                // Don't let it shrink to zero or negative
+                if (newRadius > 1.0f) {
+                    ball.setRadius(newRadius);
+                    System.out.printf("📉 Ball shrinking. New radius = %.2f\n", newRadius);
+                }
+            }
         }
-    }
-
-
-    public static boolean canGrow(Ball ball, float growAmount, float wallRadius, float wallThickness) {
-        float futureOuter = ball.getRadius() + growAmount + ball.getStrokeThickness() / 2f;
-        float wallInner = wallRadius - wallThickness / 2f;
-        boolean allowed = futureOuter < wallInner;
-        System.out.printf("\uD83E\uDDEA GROWTH CHECK \u2192 current=%.2f, future=%.2f, wallInner=%.2f \u2192 %s\n",
-                ball.getRadius(), futureOuter, wallInner, allowed ? "\u2705 ALLOWED" : "\u274C BLOCKED");
-        return allowed;
-    }
-
-    public void setWallRadius(float wallRadius) {
-        this.wallRadius = wallRadius;
-    }
-
-    public void setWallThickness(float wallThickness) {
-        this.wallThickness = wallThickness;
     }
 
     public void setShouldStop(boolean shouldStop) {
@@ -92,19 +72,17 @@ public class MaxSizeStopEffect {
         this.shrinkRate = shrinkRate;
     }
 
-    public void setEnforceWallBoundaryLimit(boolean enabled) {
-        this.enforceWallBoundaryLimit = enabled;
+    public void setEnforceWallBoundaryLimit(boolean enforce) {
+        sizeChecker.setEnforceWallBoundaryLimit(enforce);
     }
 
-    public boolean isEnforceWallBoundaryLimit() {
-        return enforceWallBoundaryLimit;
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public float getWallRadius() {
-        return wallRadius;
-    }
-
-    public float getWallThickness() {
-        return wallThickness;
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

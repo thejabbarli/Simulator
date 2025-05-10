@@ -29,6 +29,7 @@ public class StraightWall extends Wall {
 
         ball.setVelocity(vel);
         ball.setPosition(pos);
+        ball.markBounce();
     }
 
     @Override

@@ -7,120 +7,69 @@ public class Ball {
     private PVector position;
     private PVector velocity;
     private float radius;
+    private float strokeThickness;
     private float mass;
     private int color;
-    private float strokeThickness = 5;
-    private float maxSpeed = Float.MAX_VALUE; // Default = no limit
+    private float maxSpeed = Float.MAX_VALUE;
     private PVector previousVelocity = new PVector();
 
-    private boolean justBounced = false;
-    private boolean locked = false;
+    // State tracking managed by BallStateManager
+    private final BallStateManager stateManager = new BallStateManager();
 
-
-    public Ball(PVector position, float radius, float mass, int color) {
+    public Ball(PVector position, float radius, float mass) {
         this.position = position.copy();
         this.velocity = new PVector(0, 0);
         this.radius = radius;
         this.mass = mass;
-        this.color = color;
     }
 
     public void applyForce(PVector force) {
+        if (stateManager.isLocked()) return;
+
         PVector acceleration = force.copy().div(mass);
         velocity.add(acceleration);
     }
 
     public void update() {
-        if (locked) return;  // ✅ Skip position update once locked
+        if (stateManager.isLocked()) return;
         position.add(velocity);
     }
 
-
-    public void display(PApplet app) {
-        float hue = (app.frameCount * 2) % 360;
-
-        app.colorMode(PApplet.HSB, 360, 100, 100, 100);
-        app.stroke(hue, 100, 100);
-        app.strokeWeight(strokeThickness);
-        app.noFill();
-
-        app.ellipse(position.x, position.y, radius * 2, radius * 2);
-
-        app.colorMode(PApplet.RGB, 255);
-    }
-
     public void checkCollision(Collidable collidable) {
-        if (locked) return;  // ✅ Skip all collision logic once locked
+        if (stateManager.isLocked()) return;
         if (collidable.checkCollision(this)) {
             collidable.resolveCollision(this);
-            markBounce();
+            stateManager.markBounce();
         }
     }
 
-
-
-
-    public void grow(float amount) {
-        radius += amount;
-    }
-
-    // Optional: if you want the stroke thickness to grow too
-    public void increaseStroke(float amount) {
-        strokeThickness += amount;
-    }
-
-    public void markBounce() {
-        this.justBounced = true;
-    }
-
-    public boolean hasJustBounced() {
-        return justBounced;
-    }
-
-    public void resetBounceFlag() {
-        this.justBounced = false;
-    }
-
-
-    public void lockMotion() {
-        this.velocity.set(0, 0);
-        this.locked = true;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-
-    // Getters and Setters
-
-    public void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
-    }
-
-    public float getEffectiveRadius() {
-        return radius + strokeThickness / 2.0f;
-    }
-
-    public PVector getPosition() {
-        return position;
-    }
-
-    public void setPosition(PVector position) {
-        this.position = position;
-    }
-
-    public PVector getVelocity() {
-        return velocity;
-    }
+    // Core physics getters/setters
+    public PVector getPosition() { return position; }
+    public void setPosition(PVector position) { this.position = position; }
+    public PVector getVelocity() { return velocity; }
 
     public void setVelocity(PVector velocity) {
+        if (stateManager.isLocked()) return;
+
         if (velocity.mag() > maxSpeed) {
             velocity = velocity.copy().normalize().mult(maxSpeed);
         }
         this.velocity = velocity;
     }
 
+    public float getRadius() { return radius; }
+    public void setRadius(float radius) { this.radius = radius; }
+    public float getMass() { return mass; }
+    public void setMass(float mass) { this.mass = mass; }
+    public void setMaxSpeed(float maxSpeed) { this.maxSpeed = maxSpeed; }
+    public float getStrokeThickness() { return strokeThickness; }
+    public void setStrokeThickness(float thickness) { this.strokeThickness = thickness; }
+    public int getColor() { return color; }
+    public void setColor(int color) { this.color = color; }
+
+    public float getEffectiveRadius() {
+        return radius + strokeThickness / 2.0f;
+    }
 
     public int getCurrentVisualStrokeColor(PApplet app) {
         float hue = (app.frameCount * 2) % 360;
@@ -130,46 +79,17 @@ public class Ball {
         return c;
     }
 
-    public float getRadius() {
-        return radius;
+    // State delegation methods
+    public boolean isLocked() { return stateManager.isLocked(); }
+    public void lockMotion() {
+        this.velocity.set(0, 0);
+        stateManager.setLocked(true);
     }
+    public boolean hasJustBounced() { return stateManager.hasJustBounced(); }
+    public void resetBounceFlag() { stateManager.resetBounceFlag(); }
+    public void markBounce() { stateManager.markBounce(); }
 
-    public void setRadius(float radius) {
-        this.radius = radius;
-    }
-
-    public float getMass() {
-        return mass;
-    }
-
-    public void setMass(float mass) {
-        this.mass = mass;
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public float getStrokeThickness() {
-        return strokeThickness;
-    }
-
-    public void setStrokeThickness(float strokeThickness) {
-        this.strokeThickness = strokeThickness;
-    }
-
-
-
-    public PVector getPreviousVelocity() {
-        return previousVelocity;
-    }
-
-    public void preserveVelocity() {
-        previousVelocity.set(velocity);
-    }
-
+    // Physics utility methods
+    public void preserveVelocity() { previousVelocity.set(velocity); }
+    public PVector getPreviousVelocity() { return previousVelocity; }
 }

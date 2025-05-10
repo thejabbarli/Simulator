@@ -1,0 +1,162 @@
+beforer moving to GUI we have problems to fix first
+
+
+```
+package simulation.core;
+
+import processing.core.PApplet;
+import processing.core.PVector;
+import simulation.config.SettingsManager;
+import simulation.effects.*;
+import simulation.rendering.BallRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SimulationApp extends PApplet {
+
+    private SettingsManager settings;
+
+    // Core simulation objects
+    private Ball ball;
+    private BallRenderer ballRenderer;
+    private List walls;
+    private List collidables;
+    private PhysicsEngine physicsEngine;
+
+    // Effect system
+    private EffectSystem effectSystem;
+    private MaxSizeChecker maxSizeChecker;
+
+    public static void main(String[] args) {
+        PApplet.main("simulation.core.SimulationApp");
+    }
+
+    @Override
+    public void settings() {
+        size(1000, 800);
+    }
+
+    @Override
+    public void setup() {
+        background(0);
+        frameRate(60);
+
+        // Load settings
+        settings = new SettingsManager();
+
+        // Setup wall parameters
+        float wallRadius = 200;
+        float wallThickness = 10;
+        float elasticity = 1.0f;
+        PVector wallCenter = new PVector(width / 2f, height / 2f);
+
+        // Create ball
+        PVector ballPosition = new PVector(wallCenter.x + 4, wallCenter.y);
+        ball = new Ball(
+                ballPosition,
+                settings.getBallRadius(),
+                settings.getBallMass()
+        );
+        ball.setMaxSpeed(settings.getBallMaxSpeed());
+
+        // Create ball renderer
+        ballRenderer = new BallRenderer(settings.getBallColor());
+        ballRenderer.setStrokeThickness(settings.getBallStroke());
+
+        // Walls
+        walls = new ArrayList<>();
+        walls.add(new CircularWall(wallCenter, wallRadius, wallThickness, elasticity));
+
+        // Collidables
+        collidables = new ArrayList<>(walls);
+
+        // Physics engine
+        physicsEngine = new PhysicsEngine(settings.getGravity());
+
+        // Effect system
+        effectSystem = new EffectSystem();
+
+        // Size checker
+        maxSizeChecker = new MaxSizeChecker(wallRadius, wallThickness);
+
+        // Register effects
+        BounceGrowthEffect bounceGrowth = new BounceGrowthEffect(
+                settings.getGrowthAmount(), maxSizeChecker, ballRenderer);
+        effectSystem.registerEffect(bounceGrowth);
+
+        BounceSpeedBoostEffect bounceSpeedBoost = new BounceSpeedBoostEffect(settings.getSpeedBoostFactor());
+        effectSystem.registerEffect(bounceSpeedBoost);
+
+        MaxSizeStopEffect maxSizeStop = new MaxSizeStopEffect(
+                wallCenter,
+                maxSizeChecker,
+                settings.getGrowthAmount(),
+                settings.getShouldStop(),
+                settings.getShouldShrink(),
+                settings.getShrinkRate()
+        );
+        effectSystem.registerEffect(maxSizeStop);
+
+        BallTraceEffect ballTrace = new BallTraceEffect(
+                settings.getTraceFrequency(),
+                settings.getTraceLifetimeFrames(),
+                settings.getPermanentTraces(),
+                frameRate,
+                ballRenderer
+        );
+        effectSystem.registerEffect(ballTrace);
+    }
+
+    @Override
+    public void draw() {
+        background(0);
+
+        // Update physics
+        ball.resetBounceFlag();
+        ball.preserveVelocity();
+        physicsEngine.update(ball, collidables);
+
+        // Apply all effects
+        effectSystem.applyEffects(ball);
+
+        // Render traces
+        BallTraceEffect traceEffect = effectSystem.getEffect(BallTraceEffect.class);
+        if (traceEffect != null) {
+            traceEffect.display(this);
+        }
+
+        // Render scene
+        ballRenderer.display(ball, this);
+        for (Wall wall : walls) {
+            wall.display(this);
+        }
+    }
+}
+Required type:
+BallEffect
+Provided:
+BounceSpeedBoostEffect
+
+Expected 7 arguments but found 6
+Expected 7 arguments but found 6
+Required type:
+BallEffect
+Provided:
+MaxSizeStopEffect
+Required type:
+float
+Provided:
+BallRenderer
+Required type:
+BallEffect
+Provided:
+BallTraceEffect
+Required type:
+Class
+
+Provided:
+Class
+
+reason: no instance(s) of type variable(s) exist so that BallTraceEffect conforms to BallEffect
+```

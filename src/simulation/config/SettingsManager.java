@@ -4,19 +4,19 @@ public class SettingsManager {
 
     // Ball settings
     private float ballRadius = 30f;
-    private float ballStroke = 5f;
+    private float ballStroke = 0.1f;
     private float ballMass = 1.0f;
     private int ballColor = 0xFFFF00FF; // Magenta (HSB ignored)
-    private float ballMaxSpeed = 40f;
+    private float ballMaxSpeed = 500f;
 
     // Physics
     private float gravity = 0.7f;
 
     // Bounce Growth
-    private float growthAmount = 1.5f;
+    private float growthAmount = 1.1f;
 
     // Bounce Speed Boost
-    private float speedBoostFactor = 1.075f;
+    private float speedBoostFactor = 1.03f;
 
     // Max Size Stop
     private float maxSizeRadius = 250f;
@@ -25,14 +25,34 @@ public class SettingsManager {
     private float shrinkRate = 0.5f;
 
     // Ball Trace
-    private float traceFrequency = 40f;
+    private float traceFrequency = 2500f;
     private int traceLifetimeFrames = 40;
     private boolean permanentTraces = true;
 
-    // Inside class SettingsManager.java
+    // In your SettingsManager class
+    private float trailThicknessMultiplier = 1.0f; // Default to 1x thickness
+
+    public float getTrailThicknessMultiplier() {
+        return trailThicknessMultiplier;
+    }
+
+    public void setTrailThicknessMultiplier(float multiplier) {
+        this.trailThicknessMultiplier = multiplier;
+    }
+
+    // In SettingsManager class
+    private float trailThickness = 10.0f; // Default thickness
+
+    public float getTrailThickness() {
+        return trailThickness;
+    }
+
+    public void setTrailThickness(float thickness) {
+        this.trailThickness = thickness;
+    }
+
+    // Wall boundaries
     private boolean enforceWallBoundaryLimit = true;
-
-
 
     // Getters
     public float getBallRadius() { return ballRadius; }
@@ -56,6 +76,10 @@ public class SettingsManager {
     public int getTraceLifetimeFrames() { return traceLifetimeFrames; }
     public boolean getPermanentTraces() { return permanentTraces; }
 
+    public boolean isEnforceWallBoundaryLimit() {
+        return enforceWallBoundaryLimit;
+    }
+
     // Setters (for GUI use)
     public void setBallRadius(float r) { ballRadius = r; }
     public void setBallStroke(float s) { ballStroke = s; }
@@ -78,13 +102,7 @@ public class SettingsManager {
     public void setTraceLifetimeFrames(int f) { traceLifetimeFrames = f; }
     public void setPermanentTraces(boolean b) { permanentTraces = b; }
 
-
-    public boolean isEnforceWallBoundaryLimit() {
-        return enforceWallBoundaryLimit;
-    }
-
     public void setEnforceWallBoundaryLimit(boolean enforce) {
         this.enforceWallBoundaryLimit = enforce;
     }
-
 }
