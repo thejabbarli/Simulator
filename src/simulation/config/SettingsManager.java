@@ -7,7 +7,7 @@ public class SettingsManager {
     private float ballStroke = 0.1f;
     private float ballMass = 1.0f;
     private int ballColor = 0xFFFF00FF; // Magenta (HSB ignored)
-    private float ballMaxSpeed = 500f;
+    private float ballMaxSpeed = 300f;
 
     // Physics
     private float gravity = 0.7f;
@@ -16,7 +16,7 @@ public class SettingsManager {
     private float growthAmount = 1.1f;
 
     // Bounce Speed Boost
-    private float speedBoostFactor = 1.03f;
+    private float speedBoostFactor = 1.012f;
 
     // Max Size Stop
     private float maxSizeRadius = 250f;
@@ -26,11 +26,11 @@ public class SettingsManager {
 
     // Ball Trace
     private float traceFrequency = 2500f;
-    private int traceLifetimeFrames = 40;
-    private boolean permanentTraces = true;
+    private int traceLifetimeFrames = 2;
+    private boolean permanentTraces = false;
 
     // In your SettingsManager class
-    private float trailThicknessMultiplier = 1.0f; // Default to 1x thickness
+    private float trailThicknessMultiplier = 1f; // Default to 1x thickness
 
     public float getTrailThicknessMultiplier() {
         return trailThicknessMultiplier;
@@ -49,6 +49,80 @@ public class SettingsManager {
 
     public void setTrailThickness(float thickness) {
         this.trailThickness = thickness;
+    }
+
+    // Sound settings
+    private boolean soundEnabled = true;
+    private int noteDuration = 150; // milliseconds
+    private float noteVolume = 0.5f; // 0.0 - 1.0
+    private int bounceInstrument = 0; // Default to sine wave
+    private boolean pitchModeRadius = true; // If true, pitch is determined by radius
+    private boolean pitchModeVelocity = false; // If true, pitch is determined by velocity
+    private int basePitch = 48; // A4 (middle A) by default
+    private int pitchRange = 36; // 3 octaves range
+
+    public boolean isSoundEnabled() {
+        return soundEnabled;
+    }
+
+    public void setSoundEnabled(boolean enabled) {
+        this.soundEnabled = enabled;
+    }
+
+    public int getNoteDuration() {
+        return noteDuration;
+    }
+
+    public void setNoteDuration(int duration) {
+        this.noteDuration = duration;
+    }
+
+    public float getNoteVolume() {
+        return noteVolume;
+    }
+
+    public void setNoteVolume(float volume) {
+        this.noteVolume = Math.max(0.0f, Math.min(1.0f, volume));
+    }
+
+    public int getBounceInstrument() {
+        return bounceInstrument;
+    }
+
+    public void setBounceInstrument(int instrument) {
+        this.bounceInstrument = instrument;
+    }
+
+    public boolean isPitchModeRadius() {
+        return pitchModeRadius;
+    }
+
+    public void setPitchModeRadius(boolean enabled) {
+        this.pitchModeRadius = enabled;
+    }
+
+    public boolean isPitchModeVelocity() {
+        return pitchModeVelocity;
+    }
+
+    public void setPitchModeVelocity(boolean enabled) {
+        this.pitchModeVelocity = enabled;
+    }
+
+    public int getBasePitch() {
+        return basePitch;
+    }
+
+    public void setBasePitch(int pitch) {
+        this.basePitch = Math.max(0, Math.min(87, pitch));
+    }
+
+    public int getPitchRange() {
+        return pitchRange;
+    }
+
+    public void setPitchRange(int range) {
+        this.pitchRange = Math.max(1, Math.min(87, range));
     }
 
     // Wall boundaries

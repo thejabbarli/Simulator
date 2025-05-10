@@ -5,27 +5,24 @@ import processing.core.PVector;
 import simulation.config.SettingsManager;
 import simulation.effects.*;
 import simulation.rendering.BallRenderer;
+import simulation.audio.NotePlayer;
+import simulation.audio.ProcessingNotePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationApp extends PApplet {
 
-    // Configuration
     private SettingsManager settings;
-
-    // Core simulation objects
     private Ball ball;
     private BallRenderer ballRenderer;
     private List<Wall> walls;
     private List<Collidable> collidables;
     private PhysicsEngine physicsEngine;
-
-    // Effect system
     private EffectSystem effectSystem;
     private MaxSizeChecker maxSizeChecker;
+    private NotePlayer notePlayer;
 
-    // Window configuration
     private final int WINDOW_WIDTH = 1000;
     private final int WINDOW_HEIGHT = 800;
     private final int TARGET_FRAMERATE = 60;
@@ -43,49 +40,38 @@ public class SimulationApp extends PApplet {
     public void setup() {
         background(0);
         frameRate(TARGET_FRAMERATE);
-
-        // Initialize core components
         initializeSettings();
         initializeSimulationComponents();
         initializeEffectSystem();
     }
 
     private void initializeSettings() {
-        // Load settings - this would be expanded for GUI integration
         settings = new SettingsManager();
     }
 
     private void initializeSimulationComponents() {
-        // Setup wall parameters
-        float wallRadius = 200;
+        float wallRadius = 350;
         float wallThickness = 10;
         float elasticity = 1.0f;
         PVector wallCenter = new PVector(width / 2f, height / 2f);
 
-        // Create ball
-        PVector ballPosition = new PVector(wallCenter.x + 30, wallCenter.y - wallRadius / 2);
+        PVector ballPosition = new PVector(wallCenter.x + 100, wallCenter.y - wallRadius / 2);
         ball = createBall(ballPosition);
 
-        // Create ball renderer
         ballRenderer = createBallRenderer();
 
-        // Create walls and collidables
         walls = createWalls(wallCenter, wallRadius, wallThickness, elasticity);
         collidables = new ArrayList<>(walls);
 
-        // Create physics engine
         physicsEngine = new PhysicsEngine(settings.getGravity());
-
-        // Create size checker
         maxSizeChecker = new MaxSizeChecker(wallRadius, wallThickness);
+
+        notePlayer = new ProcessingNotePlayer(this);
+        notePlayer.initialize();
     }
 
     private Ball createBall(PVector ballPosition) {
-        Ball newBall = new Ball(
-                ballPosition,
-                settings.getBallRadius(),
-                settings.getBallMass()
-        );
+        Ball newBall = new Ball(ballPosition, settings.getBallRadius(), settings.getBallMass());
         newBall.setMaxSpeed(settings.getBallMaxSpeed());
         return newBall;
     }
@@ -96,8 +82,7 @@ public class SimulationApp extends PApplet {
         return renderer;
     }
 
-    private List<Wall> createWalls(PVector wallCenter, float wallRadius,
-                                   float wallThickness, float elasticity) {
+    private List<Wall> createWalls(PVector wallCenter, float wallRadius, float wallThickness, float elasticity) {
         List<Wall> wallList = new ArrayList<>();
         wallList.add(new CircularWall(wallCenter, wallRadius, wallThickness, elasticity));
         return wallList;
@@ -106,40 +91,54 @@ public class SimulationApp extends PApplet {
     private void initializeEffectSystem() {
         effectSystem = new EffectSystem();
 
-        // Register growth effect
-        BounceGrowthEffect bounceGrowth = new BounceGrowthEffect(
-                settings.getGrowthAmount(),
-                maxSizeChecker
-        );
+        BounceGrowthEffect bounceGrowth = new BounceGrowthEffect(settings.getGrowthAmount(), maxSizeChecker);
         effectSystem.registerEffect(bounceGrowth);
 
-        // Register speed boost effect
-        BounceSpeedBoostEffect bounceSpeedBoost = new BounceSpeedBoostEffect(
-                settings.getSpeedBoostFactor()
-        );
+        BounceSpeedBoostEffect bounceSpeedBoost = new BounceSpeedBoostEffect(settings.getSpeedBoostFactor());
         effectSystem.registerEffect(bounceSpeedBoost);
 
-        // Register max size effect
         PVector wallCenter = new PVector(width / 2f, height / 2f);
-        MaxSizeStopEffect maxSizeStop = new MaxSizeStopEffect(
-                wallCenter,
-                maxSizeChecker,
-                settings.getGrowthAmount(),
-                settings.getShouldStop(),
-                settings.getShouldShrink(),
-                settings.getShrinkRate()
-        );
+        MaxSizeStopEffect maxSizeStop = new MaxSizeStopEffect(wallCenter, maxSizeChecker,
+                settings.getGrowthAmount(), settings.getShouldStop(),
+                settings.getShouldShrink(), settings.getShrinkRate());
         effectSystem.registerEffect(maxSizeStop);
 
-        // Register trace effect with default thickness
         BallTraceEffect ballTrace = new BallTraceEffect(
                 settings.getTraceFrequency(),
                 settings.getTraceLifetimeFrames(),
                 settings.getPermanentTraces(),
                 TARGET_FRAMERATE,
-                this  // Pass the PApplet instance
+                this,
+                settings.getTrailThicknessMultiplier()
         );
         effectSystem.registerEffect(ballTrace);
+
+        BounceNoteEffect bounceNote = new BounceNoteEffect(
+                notePlayer,
+                settings,
+                maxSizeChecker.getWallRadius(),
+                settings.getBallMaxSpeed()
+        );
+        effectSystem.registerEffect(bounceNote);
+    }
+
+    public void updateAudioSettings(boolean enabled, int instrument, boolean pitchModeRadius,
+                                    boolean pitchModeVelocity, int basePitch, int pitchRange,
+                                    float volume, int duration) {
+        settings.setSoundEnabled(enabled);
+        settings.setBounceInstrument(instrument);
+        settings.setPitchModeRadius(pitchModeRadius);
+        settings.setPitchModeVelocity(pitchModeVelocity);
+        settings.setBasePitch(basePitch);
+        settings.setPitchRange(pitchRange);
+        settings.setNoteVolume(volume);
+        settings.setNoteDuration(duration);
+
+        BounceNoteEffect effect = effectSystem.getEffect(BounceNoteEffect.class);
+        if (effect != null) {
+            effect.setMaxBallRadius(maxSizeChecker.getWallRadius());
+            effect.setMaxVelocity(settings.getBallMaxSpeed());
+        }
     }
 
     public void updateTrailThickness(float multiplier) {
@@ -149,29 +148,11 @@ public class SimulationApp extends PApplet {
         }
     }
 
-    // In SimulationApp class
-    /*public void updateTrailThickness(float thickness) {
-        BallTraceEffect effect = effectSystem.getEffect(BallTraceEffect.class);
-        if (effect != null) {
-            effect.setTrailThickness(thickness);
-        }
-    }*/
-
-
-
-
     @Override
     public void draw() {
-        // Clear background
         background(0);
-
-        // Update physics
         updatePhysics();
-
-        // Apply all effects
         effectSystem.applyEffects(ball);
-
-        // Render scene
         renderScene();
     }
 
@@ -180,22 +161,16 @@ public class SimulationApp extends PApplet {
     }
 
     private void renderScene() {
-        // Render traces first (behind everything else)
         BallTraceEffect traceEffect = effectSystem.getEffect(BallTraceEffect.class);
         if (traceEffect != null) {
             traceEffect.display(this);
         }
 
-        // Render ball
         ballRenderer.display(ball, this);
-
-        // Render walls
         for (Wall wall : walls) {
             wall.display(this);
         }
     }
-
-    // Methods to support runtime configuration changes - these would be connected to GUI
 
     public void updateGravity(float gravity) {
         physicsEngine.setGravity(gravity);
@@ -251,43 +226,52 @@ public class SimulationApp extends PApplet {
         }
     }
 
-    // Keyboard/mouse handlers could be added here to provide interactive control
-    // before the GUI is implemented
-
     @Override
     public void keyPressed() {
-        // Example keyboard controls - these could be expanded or customized
         switch (key) {
             case 'g':
-                // Toggle gravity
                 float currentGravity = physicsEngine.getGravity().y;
                 updateGravity(currentGravity > 0 ? 0 : 0.2f);
                 break;
             case 'r':
-                // Reset ball
                 PVector wallCenter = new PVector(width / 2f, height / 2f);
                 ball.setPosition(new PVector(wallCenter.x, wallCenter.y - 50));
                 ball.setVelocity(new PVector(0, 0));
                 ball.setRadius(settings.getBallRadius());
                 break;
             case 't':
-                // Toggle traces
                 BallTraceEffect traceEffect = effectSystem.getEffect(BallTraceEffect.class);
                 if (traceEffect != null) {
                     traceEffect.setEnabled(!traceEffect.isEnabled());
                 }
+                break;
+            case 's':
+                settings.setSoundEnabled(!settings.isSoundEnabled());
+                System.out.println("Sound " + (settings.isSoundEnabled() ? "enabled" : "disabled"));
+                break;
+            case '1': case '2': case '3': case '0':
+                int instrument = key == '0' ? 0 : (key - '1' + 1);
+                settings.setBounceInstrument(instrument);
+                System.out.println("Instrument set to " + instrument);
                 break;
         }
     }
 
     @Override
     public void mousePressed() {
-        // Give the ball a push in the direction of mouse click
         if (mouseButton == LEFT) {
             PVector mousePos = new PVector(mouseX, mouseY);
             PVector force = PVector.sub(mousePos, ball.getPosition());
-            force.normalize().mult(2); // Adjust multiplier for force strength
+            force.normalize().mult(2);
             ball.setVelocity(force);
         }
+    }
+
+    @Override
+    public void dispose() {
+        if (notePlayer != null) {
+            notePlayer.dispose();
+        }
+        super.dispose();
     }
 }
