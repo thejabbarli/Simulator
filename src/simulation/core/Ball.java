@@ -11,6 +11,10 @@ public class Ball {
     private int color;
     private float strokeThickness = 5;
     private float maxSpeed = Float.MAX_VALUE; // Default = no limit
+    private PVector previousVelocity = new PVector();
+
+    private boolean justBounced = false;
+    private boolean locked = false;
 
 
     public Ball(PVector position, float radius, float mass, int color) {
@@ -27,8 +31,10 @@ public class Ball {
     }
 
     public void update() {
+        if (locked) return;  // ✅ Skip position update once locked
         position.add(velocity);
     }
+
 
     public void display(PApplet app) {
         float hue = (app.frameCount * 2) % 360;
@@ -44,10 +50,15 @@ public class Ball {
     }
 
     public void checkCollision(Collidable collidable) {
+        if (locked) return;  // ✅ Skip all collision logic once locked
         if (collidable.checkCollision(this)) {
             collidable.resolveCollision(this);
+            markBounce();
         }
     }
+
+
+
 
     public void grow(float amount) {
         radius += amount;
@@ -57,6 +68,29 @@ public class Ball {
     public void increaseStroke(float amount) {
         strokeThickness += amount;
     }
+
+    public void markBounce() {
+        this.justBounced = true;
+    }
+
+    public boolean hasJustBounced() {
+        return justBounced;
+    }
+
+    public void resetBounceFlag() {
+        this.justBounced = false;
+    }
+
+
+    public void lockMotion() {
+        this.velocity.set(0, 0);
+        this.locked = true;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
 
     // Getters and Setters
 
@@ -127,4 +161,15 @@ public class Ball {
     public void setStrokeThickness(float strokeThickness) {
         this.strokeThickness = strokeThickness;
     }
+
+
+
+    public PVector getPreviousVelocity() {
+        return previousVelocity;
+    }
+
+    public void preserveVelocity() {
+        previousVelocity.set(velocity);
+    }
+
 }

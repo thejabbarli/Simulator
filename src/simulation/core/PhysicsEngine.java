@@ -15,10 +15,14 @@ public class PhysicsEngine {
     }
 
     public void update(Ball ball, List<Collidable> collidables) {
-        applyForces(ball);
+        ball.resetBounceFlag();          // 🧼 reset at start of frame
+        ball.preserveVelocity();         // ✅ track velocity
+        ball.applyForce(gravity);
         ball.update();
         for (Collidable c : collidables) {
-            ball.checkCollision(c);
+            ball.checkCollision(c);      // this may call resolveCollision()
         }
     }
+
+
 }

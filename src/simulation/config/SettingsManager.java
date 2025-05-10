@@ -13,7 +13,7 @@ public class SettingsManager {
     private float gravity = 0.7f;
 
     // Bounce Growth
-    private float growthAmount = 1.7f;
+    private float growthAmount = 1.5f;
 
     // Bounce Speed Boost
     private float speedBoostFactor = 1.075f;
@@ -28,6 +28,11 @@ public class SettingsManager {
     private float traceFrequency = 40f;
     private int traceLifetimeFrames = 40;
     private boolean permanentTraces = true;
+
+    // Inside class SettingsManager.java
+    private boolean enforceWallBoundaryLimit = true;
+
+
 
     // Getters
     public float getBallRadius() { return ballRadius; }
@@ -72,4 +77,14 @@ public class SettingsManager {
     public void setTraceFrequency(float f) { traceFrequency = f; }
     public void setTraceLifetimeFrames(int f) { traceLifetimeFrames = f; }
     public void setPermanentTraces(boolean b) { permanentTraces = b; }
+
+
+    public boolean isEnforceWallBoundaryLimit() {
+        return enforceWallBoundaryLimit;
+    }
+
+    public void setEnforceWallBoundaryLimit(boolean enforce) {
+        this.enforceWallBoundaryLimit = enforce;
+    }
+
 }

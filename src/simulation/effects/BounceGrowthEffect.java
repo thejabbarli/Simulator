@@ -2,28 +2,25 @@ package simulation.effects;
 
 import simulation.core.Ball;
 import simulation.core.Collidable;
-import processing.core.PVector;
 
 public class BounceGrowthEffect {
-    private PVector lastVelocity = new PVector();
-
     private float growthAmount;
+    private MaxSizeStopEffect sizeLimiter;
 
-    public BounceGrowthEffect(float growthAmount) {
+    public BounceGrowthEffect(float growthAmount, MaxSizeStopEffect limiter) {
         this.growthAmount = growthAmount;
+        this.sizeLimiter = limiter;
     }
 
     public void apply(Ball ball, Collidable collidable) {
-        PVector currentVel = ball.getVelocity();
-
-        // Detect inversion in velocity direction (bounce)
-        boolean bounced = currentVel.dot(lastVelocity) < 0;
-
-        if (bounced) {
-            ball.setRadius(ball.getRadius() + growthAmount);
+        if (ball.hasJustBounced()) {
+            if (MaxSizeStopEffect.canGrow(ball, growthAmount, sizeLimiter.getWallRadius(), sizeLimiter.getWallThickness())) {
+                ball.setRadius(ball.getRadius() + growthAmount);
+                System.out.println("✅ Bounce! New radius: " + ball.getRadius());
+            } else {
+                System.out.println("🛑 Max size reached. Growth blocked.");
+            }
         }
-
-        lastVelocity.set(currentVel);
     }
 
     public void setGrowthAmount(float amount) {

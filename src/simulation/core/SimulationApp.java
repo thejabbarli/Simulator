@@ -72,15 +72,24 @@ public class SimulationApp extends PApplet {
         // Physics engine
         physicsEngine = new PhysicsEngine(settings.getGravity());
 
-        // Effects
-        bounceGrowth = new BounceGrowthEffect(settings.getGrowthAmount());
-        bounceSpeedBoost = new BounceSpeedBoostEffect(settings.getSpeedBoostFactor());
+        // Max size limiter
         maxSizeStopEffect = new MaxSizeStopEffect(
-                settings.getMaxSizeRadius(),
+                wallRadius,
+                wallThickness,
                 settings.getShouldStop(),
                 settings.getShouldShrink(),
-                settings.getShrinkRate()
+                settings.getShrinkRate(),
+                settings.isEnforceWallBoundaryLimit()
         );
+
+        // Effects
+        bounceGrowth = new BounceGrowthEffect(
+                settings.getGrowthAmount(),
+                maxSizeStopEffect
+        );
+
+        bounceSpeedBoost = new BounceSpeedBoostEffect(settings.getSpeedBoostFactor());
+
         ballTraceEffect = new BallTraceEffect(
                 settings.getTraceFrequency(),
                 settings.getTraceLifetimeFrames(),
@@ -88,7 +97,7 @@ public class SimulationApp extends PApplet {
                 frameRate
         );
 
-        // Controller: runtime sync between settings and objects
+        // Controller
         controller = new SimulationController(
                 settings,
                 ball,
@@ -98,6 +107,7 @@ public class SimulationApp extends PApplet {
                 ballTraceEffect
         );
     }
+
 
     @Override
     public void draw() {
@@ -116,7 +126,7 @@ public class SimulationApp extends PApplet {
         }
 
         CircularWall cw = (CircularWall) walls.get(0);
-        maxSizeStopEffect.apply(ball, cw.getRadius(), cw.getThickness());
+        maxSizeStopEffect.apply(ball);
 
         // Trace effect
         ballTraceEffect.update(ball, this);

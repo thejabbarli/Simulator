@@ -59,6 +59,9 @@ public class CircularWall extends Wall {
         float dot = velocity.dot(toBall);
         PVector reflection = PVector.sub(velocity, toBall.mult(2 * dot)).mult(elasticity);
         ball.setVelocity(reflection);
+
+        ball.markBounce();
+
     }
 
 

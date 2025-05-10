@@ -30,24 +30,27 @@ public class SimulationController {
 
     // Simulate GUI updating values
     public void applyAllSettings() {
-        // Ball
-        ball.setRadius(settings.getBallRadius());
+        // Do NOT reset radius here — it breaks growth effects
+        // ball.setRadius(settings.getBallRadius());
+
         ball.setStrokeThickness(settings.getBallStroke());
         ball.setMass(settings.getBallMass());
         ball.setColor(settings.getBallColor());
         ball.setMaxSpeed(settings.getBallMaxSpeed());
 
-        // Effects
         growthEffect.setGrowthAmount(settings.getGrowthAmount());
         speedBoostEffect.setBoostFactor(settings.getSpeedBoostFactor());
 
-        maxSizeStopEffect.setMaxRadius(settings.getMaxSizeRadius());
         maxSizeStopEffect.setShouldStop(settings.getShouldStop());
         maxSizeStopEffect.setShouldShrink(settings.getShouldShrink());
         maxSizeStopEffect.setShrinkRate(settings.getShrinkRate());
+        maxSizeStopEffect.setEnforceWallBoundaryLimit(settings.isEnforceWallBoundaryLimit());
+
+
 
         traceEffect.setFrequency(settings.getTraceFrequency());
         traceEffect.setTraceLifetimeFrames(settings.getTraceLifetimeFrames());
         traceEffect.setPermanentTraces(settings.getPermanentTraces());
     }
+
 }

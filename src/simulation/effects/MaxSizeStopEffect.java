@@ -3,35 +3,55 @@ package simulation.effects;
 import simulation.core.Ball;
 
 public class MaxSizeStopEffect {
-    private float maxRadius;
+    private float wallRadius;
+    private float wallThickness;
     private boolean shouldStop;
     private boolean shouldShrink;
     private float shrinkRate;
+    private boolean enforceWallBoundaryLimit;
 
-    public MaxSizeStopEffect(float maxRadius, boolean shouldStop, boolean shouldShrink, float shrinkRate) {
-        this.maxRadius = maxRadius;
+    public MaxSizeStopEffect(float wallRadius, float wallThickness, boolean shouldStop, boolean shouldShrink, float shrinkRate, boolean enforceWallBoundaryLimit) {
+        this.wallRadius = wallRadius;
+        this.wallThickness = wallThickness;
         this.shouldStop = shouldStop;
         this.shouldShrink = shouldShrink;
         this.shrinkRate = shrinkRate;
+        this.enforceWallBoundaryLimit = enforceWallBoundaryLimit;
     }
 
-    public void apply(Ball ball, float wallRadius, float wallThickness) {
-        float ballOuter = ball.getRadius() + ball.getStrokeThickness() / 2f;
-        float wallInner = wallRadius - wallThickness / 2f;
+    public void apply(Ball ball) {
+        if (!enforceWallBoundaryLimit || ball.isLocked()) return;
 
-        if (ballOuter >= wallInner) {
-            if (shouldStop) {
-                ball.setVelocity(ball.getVelocity().mult(0));
+        float ballOuterEdge = ball.getRadius() + ball.getStrokeThickness() / 2f;
+        float wallInnerEdge = wallRadius - wallThickness / 2f;
+
+        if (ballOuterEdge >= wallInnerEdge) {
+            if (!shouldShrink) {
+                float maxAllowedRadius = wallInnerEdge - ball.getStrokeThickness() / 2f;
+                ball.setRadius(maxAllowedRadius);
             }
-            if (shouldShrink) {
-                ball.setRadius(ball.getRadius() - shrinkRate);
+            if (shouldStop && !ball.isLocked()) {
+                ball.lockMotion();
+                System.out.printf("\uD83E\uDDCA Ball locked at radius %.2f\n", ball.getRadius());
             }
         }
     }
 
-    // Runtime GUI adjustment setters
-    public void setMaxRadius(float maxRadius) {
-        this.maxRadius = maxRadius;
+    public static boolean canGrow(Ball ball, float growAmount, float wallRadius, float wallThickness) {
+        float futureOuter = ball.getRadius() + growAmount + ball.getStrokeThickness() / 2f;
+        float wallInner = wallRadius - wallThickness / 2f;
+        boolean allowed = futureOuter < wallInner;
+        System.out.printf("\uD83E\uDDEA GROWTH CHECK \u2192 current=%.2f, future=%.2f, wallInner=%.2f \u2192 %s\n",
+                ball.getRadius(), futureOuter, wallInner, allowed ? "\u2705 ALLOWED" : "\u274C BLOCKED");
+        return allowed;
+    }
+
+    public void setWallRadius(float wallRadius) {
+        this.wallRadius = wallRadius;
+    }
+
+    public void setWallThickness(float wallThickness) {
+        this.wallThickness = wallThickness;
     }
 
     public void setShouldStop(boolean shouldStop) {
@@ -46,9 +66,19 @@ public class MaxSizeStopEffect {
         this.shrinkRate = shrinkRate;
     }
 
-    // Optional getters for GUI panels
-    public float getMaxRadius() { return maxRadius; }
-    public boolean isShouldStop() { return shouldStop; }
-    public boolean isShouldShrink() { return shouldShrink; }
-    public float getShrinkRate() { return shrinkRate; }
+    public void setEnforceWallBoundaryLimit(boolean enabled) {
+        this.enforceWallBoundaryLimit = enabled;
+    }
+
+    public boolean isEnforceWallBoundaryLimit() {
+        return enforceWallBoundaryLimit;
+    }
+
+    public float getWallRadius() {
+        return wallRadius;
+    }
+
+    public float getWallThickness() {
+        return wallThickness;
+    }
 }
