@@ -6,7 +6,7 @@ import simulation.core.Collidable;
 
 public class BounceSpeedBoostEffect {
     private float lastYVelocity = 0;
-    private final float boostFactor;
+    private float boostFactor;
 
     public BounceSpeedBoostEffect(float boostFactor) {
         this.boostFactor = boostFactor;
@@ -25,5 +25,13 @@ public class BounceSpeedBoostEffect {
         }
 
         lastYVelocity = currentY;
+    }
+
+    public void setBoostFactor(float boostFactor) {
+        this.boostFactor = boostFactor;
+    }
+
+    public float getBoostFactor() {
+        return boostFactor;
     }
 }

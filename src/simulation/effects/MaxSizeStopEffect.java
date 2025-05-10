@@ -29,8 +29,7 @@ public class MaxSizeStopEffect {
         }
     }
 
-
-    // GUI-adjustable setters
+    // Runtime GUI adjustment setters
     public void setMaxRadius(float maxRadius) {
         this.maxRadius = maxRadius;
     }
@@ -46,4 +45,10 @@ public class MaxSizeStopEffect {
     public void setShrinkRate(float shrinkRate) {
         this.shrinkRate = shrinkRate;
     }
+
+    // Optional getters for GUI panels
+    public float getMaxRadius() { return maxRadius; }
+    public boolean isShouldStop() { return shouldStop; }
+    public boolean isShouldShrink() { return shouldShrink; }
+    public float getShrinkRate() { return shrinkRate; }
 }

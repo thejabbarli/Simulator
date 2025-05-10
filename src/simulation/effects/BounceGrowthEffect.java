@@ -2,18 +2,35 @@ package simulation.effects;
 
 import simulation.core.Ball;
 import simulation.core.Collidable;
+import processing.core.PVector;
 
 public class BounceGrowthEffect {
-    private float lastYVelocity = 0;
+    private PVector lastVelocity = new PVector();
+
+    private float growthAmount;
+
+    public BounceGrowthEffect(float growthAmount) {
+        this.growthAmount = growthAmount;
+    }
 
     public void apply(Ball ball, Collidable collidable) {
-        float currentY = ball.getVelocity().y;
-        boolean isBouncing = (lastYVelocity > 0) && (currentY < 0);
+        PVector currentVel = ball.getVelocity();
 
-        if (isBouncing) {
-            ball.setRadius(ball.getRadius() + 3.5f);
+        // Detect inversion in velocity direction (bounce)
+        boolean bounced = currentVel.dot(lastVelocity) < 0;
+
+        if (bounced) {
+            ball.setRadius(ball.getRadius() + growthAmount);
         }
 
-        lastYVelocity = currentY;
+        lastVelocity.set(currentVel);
+    }
+
+    public void setGrowthAmount(float amount) {
+        this.growthAmount = amount;
+    }
+
+    public float getGrowthAmount() {
+        return growthAmount;
     }
 }

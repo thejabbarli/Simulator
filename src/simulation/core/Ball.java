@@ -88,6 +88,14 @@ public class Ball {
     }
 
 
+    public int getCurrentVisualStrokeColor(PApplet app) {
+        float hue = (app.frameCount * 2) % 360;
+        app.colorMode(PApplet.HSB, 360, 100, 100, 100);
+        int c = app.color(hue, 100, 100);
+        app.colorMode(PApplet.RGB, 255);
+        return c;
+    }
+
     public float getRadius() {
         return radius;
     }

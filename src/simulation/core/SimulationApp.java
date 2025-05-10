@@ -3,23 +3,30 @@ package simulation.core;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import simulation.config.SettingsManager;
+import simulation.config.SimulationController;
 import simulation.effects.BounceGrowthEffect;
 import simulation.effects.BounceSpeedBoostEffect;
 import simulation.effects.MaxSizeStopEffect;
+import simulation.effects.BallTraceEffect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationApp extends PApplet {
 
-    private BounceGrowthEffect bounceGrowth;
-    private BounceSpeedBoostEffect bounceSpeedBoost;
-    private MaxSizeStopEffect maxSizeStopEffect;
+    private SettingsManager settings;
+    private SimulationController controller;
 
     private Ball ball;
     private List<Wall> walls;
     private List<Collidable> collidables;
     private PhysicsEngine physicsEngine;
+
+    private BounceGrowthEffect bounceGrowth;
+    private BounceSpeedBoostEffect bounceSpeedBoost;
+    private MaxSizeStopEffect maxSizeStopEffect;
+    private BallTraceEffect ballTraceEffect;
 
     public static void main(String[] args) {
         PApplet.main("simulation.core.SimulationApp");
@@ -27,7 +34,7 @@ public class SimulationApp extends PApplet {
 
     @Override
     public void settings() {
-        size(1000, 800);  // ✅ Increased screen size
+        size(1000, 800);
     }
 
     @Override
@@ -35,38 +42,60 @@ public class SimulationApp extends PApplet {
         background(0);
         frameRate(60);
 
-        // Ball properties
-        float ballRadius = 30;
-        float ballStroke = 5;
+        // Load settings
+        settings = new SettingsManager();
 
-        // Wall properties
+        // Wall setup
         float wallRadius = 200;
         float wallThickness = 10;
         float elasticity = 1.0f;
-
-        // ✅ Perfectly centered wall
         PVector wallCenter = new PVector(width / 2f, height / 2f);
 
-        // ✅ Ball slightly off-centered (to cause bounce)
+        // Ball setup
         PVector ballPosition = new PVector(wallCenter.x + 4, wallCenter.y);
+        ball = new Ball(
+                ballPosition,
+                settings.getBallRadius(),
+                settings.getBallMass(),
+                settings.getBallColor()
+        );
+        ball.setStrokeThickness(settings.getBallStroke());
+        ball.setMaxSpeed(settings.getBallMaxSpeed());
 
-        ball = new Ball(ballPosition, ballRadius, 1.0f, color(255, 0, 255));
-        ball.setMaxSpeed(20);
-
+        // Walls
         walls = new ArrayList<>();
         walls.add(new CircularWall(wallCenter, wallRadius, wallThickness, elasticity));
 
+        // Collidables
         collidables = new ArrayList<>(walls);
-        physicsEngine = new PhysicsEngine(0.5f);
 
-        // Modular effects
-        bounceGrowth = new BounceGrowthEffect();
-        bounceSpeedBoost = new BounceSpeedBoostEffect(1.05f);
+        // Physics engine
+        physicsEngine = new PhysicsEngine(settings.getGravity());
+
+        // Effects
+        bounceGrowth = new BounceGrowthEffect(settings.getGrowthAmount());
+        bounceSpeedBoost = new BounceSpeedBoostEffect(settings.getSpeedBoostFactor());
         maxSizeStopEffect = new MaxSizeStopEffect(
-                250,     // Max radius to stop or shrink
-                true,    // Should stop on max size
-                true,    // Should shrink
-                0.5f     // Shrink rate
+                settings.getMaxSizeRadius(),
+                settings.getShouldStop(),
+                settings.getShouldShrink(),
+                settings.getShrinkRate()
+        );
+        ballTraceEffect = new BallTraceEffect(
+                settings.getTraceFrequency(),
+                settings.getTraceLifetimeFrames(),
+                settings.getPermanentTraces(),
+                frameRate
+        );
+
+        // Controller: runtime sync between settings and objects
+        controller = new SimulationController(
+                settings,
+                ball,
+                bounceGrowth,
+                bounceSpeedBoost,
+                maxSizeStopEffect,
+                ballTraceEffect
         );
     }
 
@@ -74,18 +103,24 @@ public class SimulationApp extends PApplet {
     public void draw() {
         background(0);
 
-        // Core physics
+        // Optional: live GUI update hook
+        controller.applyAllSettings();
+
+        // Physics update
         physicsEngine.update(ball, collidables);
 
-        // Apply modular behaviors
+        // Apply effects
         for (Collidable c : collidables) {
             bounceGrowth.apply(ball, c);
             bounceSpeedBoost.apply(ball, c);
         }
 
-        // Collision-aware max size logic
         CircularWall cw = (CircularWall) walls.get(0);
         maxSizeStopEffect.apply(ball, cw.getRadius(), cw.getThickness());
+
+        // Trace effect
+        ballTraceEffect.update(ball, this);
+        ballTraceEffect.display(this);
 
         // Render
         ball.display(this);
