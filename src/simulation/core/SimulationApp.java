@@ -76,6 +76,7 @@ public class SimulationApp extends PApplet {
         maxSizeStopEffect = new MaxSizeStopEffect(
                 wallRadius,
                 wallThickness,
+                settings.getGrowthAmount(),
                 settings.getShouldStop(),
                 settings.getShouldShrink(),
                 settings.getShrinkRate(),
@@ -108,7 +109,6 @@ public class SimulationApp extends PApplet {
         );
     }
 
-
     @Override
     public void draw() {
         background(0);
@@ -126,7 +126,17 @@ public class SimulationApp extends PApplet {
         }
 
         CircularWall cw = (CircularWall) walls.get(0);
-        maxSizeStopEffect.apply(ball);
+        maxSizeStopEffect.apply(ball, cw.getCenter());
+
+        // Ensure final radius aligns perfectly with wall boundary
+        if (ball.isLocked()) {
+            float wallInner = cw.getRadius() - cw.getThickness();
+            System.out.printf("🔒 Ball locked in center. Final radius = %.2f, Effective = %.2f, Target = %.2f\n",
+                    ball.getRadius(), ball.getEffectiveRadius(), wallInner);
+        }
+
+
+
 
         // Trace effect
         ballTraceEffect.update(ball, this);
