@@ -1,0 +1,31 @@
+[{
+  "settings": {
+    "ballMass": 1,
+    "speedBoostFactor": 1.0119999647140503,
+    "noteDuration": 150,
+    "noteVolume": 0.5,
+    "pitchModeRadius": true,
+    "permanentTraces": false,
+    "basePitch": 48,
+    "shouldStop": true,
+    "shouldShrink": true,
+    "traceFrequency": 2500,
+    "growthAmount": 1.100000023841858,
+    "trailThickness": 10,
+    "trailThicknessMultiplier": 1,
+    "soundEnabled": true,
+    "bounceInstrument": 0,
+    "ballMaxSpeed": 300,
+    "pitchModeVelocity": false,
+    "ballRadius": 30,
+    "pitchRange": 36,
+    "ballColor": -65281,
+    "maxSizeRadius": 250,
+    "ballStroke": 0.10000000149011612,
+    "gravity": 0.699999988079071,
+    "shrinkRate": 0.5,
+    "enforceWallBoundaryLimit": true,
+    "traceLifetimeFrames": 2
+  },
+  "name": "Default"
+}]

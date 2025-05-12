@@ -2,6 +2,11 @@
   <library name="core-4.4.1">
     <CLASSES>
       <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/core-4.4.1.jar!/" />
+      <root url="jar://D:/DownloadsD/controlP5-2.2.6/controlP5/library/controlP5.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/gluegen-rt-2.5.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/gluegen-rt-2.5.0-natives-windows-amd64.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/jogl-all-2.5.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/jogl-all-2.5.0-natives-windows-amd64.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

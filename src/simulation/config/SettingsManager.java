@@ -1,5 +1,7 @@
 package simulation.config;
 
+import processing.data.JSONObject;
+
 public class SettingsManager {
 
     // Ball settings
@@ -178,5 +180,93 @@ public class SettingsManager {
 
     public void setEnforceWallBoundaryLimit(boolean enforce) {
         this.enforceWallBoundaryLimit = enforce;
+    }
+
+    /**
+     * Convert settings to JSON
+     * @return JSON representation of settings
+     */
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+
+        // Ball settings
+        json.setFloat("ballRadius", ballRadius);
+        json.setFloat("ballStroke", ballStroke);
+        json.setFloat("ballMass", ballMass);
+        json.setInt("ballColor", ballColor);
+        json.setFloat("ballMaxSpeed", ballMaxSpeed);
+
+        // Physics
+        json.setFloat("gravity", gravity);
+        json.setFloat("growthAmount", growthAmount);
+        json.setFloat("speedBoostFactor", speedBoostFactor);
+
+        // Max Size
+        json.setFloat("maxSizeRadius", maxSizeRadius);
+        json.setBoolean("shouldStop", shouldStop);
+        json.setBoolean("shouldShrink", shouldShrink);
+        json.setFloat("shrinkRate", shrinkRate);
+        json.setBoolean("enforceWallBoundaryLimit", enforceWallBoundaryLimit);
+
+        // Traces
+        json.setFloat("traceFrequency", traceFrequency);
+        json.setInt("traceLifetimeFrames", traceLifetimeFrames);
+        json.setBoolean("permanentTraces", permanentTraces);
+        json.setFloat("trailThickness", trailThickness);
+        json.setFloat("trailThicknessMultiplier", trailThicknessMultiplier);
+
+        // Sound
+        json.setBoolean("soundEnabled", soundEnabled);
+        json.setInt("noteDuration", noteDuration);
+        json.setFloat("noteVolume", noteVolume);
+        json.setInt("bounceInstrument", bounceInstrument);
+        json.setBoolean("pitchModeRadius", pitchModeRadius);
+        json.setBoolean("pitchModeVelocity", pitchModeVelocity);
+        json.setInt("basePitch", basePitch);
+        json.setInt("pitchRange", pitchRange);
+
+        return json;
+    }
+
+    /**
+     * Load settings from JSON
+     * @param json JSON representation of settings
+     */
+    public void fromJSON(JSONObject json) {
+        // Ball settings
+        if (json.hasKey("ballRadius")) ballRadius = json.getFloat("ballRadius");
+        if (json.hasKey("ballStroke")) ballStroke = json.getFloat("ballStroke");
+        if (json.hasKey("ballMass")) ballMass = json.getFloat("ballMass");
+        if (json.hasKey("ballColor")) ballColor = json.getInt("ballColor");
+        if (json.hasKey("ballMaxSpeed")) ballMaxSpeed = json.getFloat("ballMaxSpeed");
+
+        // Physics
+        if (json.hasKey("gravity")) gravity = json.getFloat("gravity");
+        if (json.hasKey("growthAmount")) growthAmount = json.getFloat("growthAmount");
+        if (json.hasKey("speedBoostFactor")) speedBoostFactor = json.getFloat("speedBoostFactor");
+
+        // Max Size
+        if (json.hasKey("maxSizeRadius")) maxSizeRadius = json.getFloat("maxSizeRadius");
+        if (json.hasKey("shouldStop")) shouldStop = json.getBoolean("shouldStop");
+        if (json.hasKey("shouldShrink")) shouldShrink = json.getBoolean("shouldShrink");
+        if (json.hasKey("shrinkRate")) shrinkRate = json.getFloat("shrinkRate");
+        if (json.hasKey("enforceWallBoundaryLimit")) enforceWallBoundaryLimit = json.getBoolean("enforceWallBoundaryLimit");
+
+        // Traces
+        if (json.hasKey("traceFrequency")) traceFrequency = json.getFloat("traceFrequency");
+        if (json.hasKey("traceLifetimeFrames")) traceLifetimeFrames = json.getInt("traceLifetimeFrames");
+        if (json.hasKey("permanentTraces")) permanentTraces = json.getBoolean("permanentTraces");
+        if (json.hasKey("trailThickness")) trailThickness = json.getFloat("trailThickness");
+        if (json.hasKey("trailThicknessMultiplier")) trailThicknessMultiplier = json.getFloat("trailThicknessMultiplier");
+
+        // Sound
+        if (json.hasKey("soundEnabled")) soundEnabled = json.getBoolean("soundEnabled");
+        if (json.hasKey("noteDuration")) noteDuration = json.getInt("noteDuration");
+        if (json.hasKey("noteVolume")) noteVolume = json.getFloat("noteVolume");
+        if (json.hasKey("bounceInstrument")) bounceInstrument = json.getInt("bounceInstrument");
+        if (json.hasKey("pitchModeRadius")) pitchModeRadius = json.getBoolean("pitchModeRadius");
+        if (json.hasKey("pitchModeVelocity")) pitchModeVelocity = json.getBoolean("pitchModeVelocity");
+        if (json.hasKey("basePitch")) basePitch = json.getInt("basePitch");
+        if (json.hasKey("pitchRange")) pitchRange = json.getInt("pitchRange");
     }
 }

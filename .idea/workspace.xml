@@ -5,16 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b43d347f-b62c-40a7-838c-d5201c8eac80" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/simulation/audio/AudioTestApp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/simulation/audio/NotePlayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/simulation/audio/NoteUtility.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/simulation/audio/ProcessingNotePlayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/simulation/effects/BounceNoteEffect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/BounceSimulationLauncher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/AudioSettingsPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/BallSettingsPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/EffectsSettingsPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/GuiManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/PhysicsSettingsPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/PresetManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/RenderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/RenderingSettingsPanel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simulation/gui/SettingsPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/core_4_4_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/core_4_4_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Bounce.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Bounce.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/config/SettingsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/config/SettingsManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/core/SimulationApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/core/SimulationApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/core/nroaml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,14 +53,14 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/jabba/Downloads/sound/sound/library/sound.jar",
+    "last_opened_file_path": "C:/Users/jabba/Downloads/processing-4.4.1-windows-x64-portable/Processing/app/resources/core/library/jogl-all-2.5.0-natives-windows-amd64.jar",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "onboarding.tips.debug.path": "C:/Users/jabba/IdeaProjects/String Framework Folder/Bounce/src/Main.java",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
@@ -72,10 +77,24 @@
       <workItem from="1746827449073" duration="5601000" />
       <workItem from="1746863870334" duration="18227000" />
       <workItem from="1746888277268" duration="5640000" />
+      <workItem from="1746986305460" duration="916000" />
+      <workItem from="1747044340934" duration="87000" />
+      <workItem from="1747050664853" duration="5498000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
