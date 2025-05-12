@@ -66,6 +66,11 @@ public class SimulationApp extends PApplet {
     private boolean isInitializing = true;
     private boolean guiInitialized = false;
 
+    private boolean simulationStarted = false;
+    private boolean paused = true;
+    private int initFrameCount = 0;
+    private long lastFrameTime = 0;
+    private static final long TIMEOUT_THRESHOLD = 3000; // 3 seconds
 
     /**
      * Main entry point
@@ -74,25 +79,21 @@ public class SimulationApp extends PApplet {
         PApplet.main("simulation.core.SimulationApp");
     }
 
+    // In SimulationApp.java
+    // In SimulationApp.java
     @Override
     public void settings() {
-        // Use P2D renderer with hints
         size(WINDOW_WIDTH, WINDOW_HEIGHT, P2D);
         smooth(4);
-
-        // Instead of PJOGL.setProfile(1), we'll use this:
-        // This is a more compatible way to set OpenGL hints
-        System.setProperty("jogl.disable.openglcore", "false");
     }
 
     @Override
     public void setup() {
-        background(backgroundBrightness);
+        background(0);
         frameRate(TARGET_FRAMERATE);
         initializeSettings();
         initializeSimulationComponents();
         initializeEffectSystem();
-
     }
 
     /**
@@ -215,40 +216,64 @@ public class SimulationApp extends PApplet {
 
     @Override
     public void draw() {
-        // Skip first frame for initialization
+        // Watchdog timer to detect freezes
+        long currentTime = System.currentTimeMillis();
+        if (lastFrameTime > 0 && currentTime - lastFrameTime > TIMEOUT_THRESHOLD) {
+            // Emergency recovery - reset graphics
+            System.err.println("Renderer freeze detected, resetting...");
+            background(0);
+            if (guiInitialized) {
+                try {
+                    // Re-create render buffer
+                    createRenderBuffer();
+                } catch (Exception e) {
+                    System.err.println("Failed to recover: " + e.getMessage());
+                }
+            }
+        }
+        lastFrameTime = currentTime;
         if (isInitializing) {
             background(0);
-            isInitializing = false;
+            initFrameCount++;
+            if (initFrameCount > 5) {  // Wait 5 frames before continuing
+                isInitializing = false;
+            }
             return;
         }
 
-        // Initialize GUI after first frame
         if (!guiInitialized) {
-            initializeGUI();
-            createRenderBuffer();
-            guiInitialized = true;
+            try {
+                initializeGUI();
+                createRenderBuffer();
+                guiInitialized = true;
+            } catch (Exception e) {
+                // If GUI initialization fails, log error and try again later
+                System.err.println("GUI initialization error: " + e.getMessage());
+                e.printStackTrace();
+                initFrameCount = 0;
+                isInitializing = true;
+                return;
+            }
         }
 
-        // Handle window resize if requested
-        if (needResize) {
-            surface.setSize(newWidth, newHeight);
-            needResize = false;
-            createRenderBuffer();
+        // Only update physics if simulation has started and is not paused
+        if (simulationStarted && !paused) {
+            updatePhysics();
         }
 
-        // Render simulation
+        // Always draw the current state
         if (highQualityRendering) {
             drawHighQuality();
         } else {
             drawStandard();
         }
 
-        // Draw GUI if initialized
+        // Draw GUI
         if (guiInitialized) {
             guiManager.draw();
         }
 
-        // Handle frame recording
+        // Handle recording
         if (recording) {
             recordFrame();
         }
@@ -257,6 +282,17 @@ public class SimulationApp extends PApplet {
         if (guiInitialized) {
             guiManager.update();
         }
+    }
+
+
+    public void startSimulation() {
+        simulationStarted = true;
+        paused = false;
+    }
+
+    // Add getter for simulation started state
+    public boolean isSimulationStarted() {
+        return simulationStarted;
     }
 
 
@@ -307,7 +343,9 @@ public class SimulationApp extends PApplet {
      * Update physics state
      */
     private void updatePhysics() {
-        physicsEngine.update(ball, collidables);
+        if (simulationStarted && !paused) {
+            physicsEngine.update(ball, collidables);
+        }
     }
 
     /**
@@ -577,6 +615,20 @@ public class SimulationApp extends PApplet {
         ball.setPosition(new PVector(wallCenter.x, wallCenter.y - 50));
         ball.setVelocity(new PVector(0, 0));
         ball.setRadius(settings.getBallRadius());
+    }
+
+    /**
+     * Toggle pause state
+     */
+    public void togglePause() {
+        paused = !paused;
+    }
+
+    /**
+     * Check if simulation is paused
+     */
+    public boolean isPaused() {
+        return paused;
     }
 
     /**

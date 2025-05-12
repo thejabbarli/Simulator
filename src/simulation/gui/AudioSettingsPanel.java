@@ -173,6 +173,11 @@ public class AudioSettingsPanel extends SettingsPanel {
                     resetAudioSettings();
                 });
     }
+    @Override
+    public void resetToDefaults() {
+        // Already implemented as resetAudioSettings()
+        resetAudioSettings();
+    }
 
     private void updatePianoKeys() {
         for (int i = 0; i < pianoKeysMidi.length; i++) {

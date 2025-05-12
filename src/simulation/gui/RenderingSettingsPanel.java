@@ -272,6 +272,27 @@ public class RenderingSettingsPanel extends SettingsPanel {
     }
 
     @Override
+    public void resetToDefaults() {
+        // Reset to default rendering values
+        cp5.getController("windowWidth").setValue(applet.width);
+        cp5.getController("windowHeight").setValue(applet.height);
+        cp5.getController("targetFrameRate").setValue(60);
+
+        // For toggle controls, use setState instead of setValue
+        ((Toggle)cp5.getController("highQualityRender")).setState(false);
+        cp5.getController("renderScale").setValue(1);
+        ((Toggle)cp5.getController("useAntialiasing")).setState(true);
+        ((Toggle)cp5.getController("optimizeTraces")).setState(true);
+
+        // Apply changes to simulation
+        simulationApp.setHighQualityRendering(false);
+        simulationApp.setRenderScale(1);
+        simulationApp.setAntialiasing(true);
+        simulationApp.setOptimizeTraces(true);
+        applet.frameRate(60);
+    }
+
+    @Override
     public void update() {
         // Update settings from simulation if needed
 

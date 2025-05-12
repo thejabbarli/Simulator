@@ -159,6 +159,11 @@ public class EffectsSettingsPanel extends SettingsPanel {
     }
 
     @Override
+    public void resetToDefaults() {
+        // Already implemented as resetEffectsSettings()
+        resetEffectsSettings();
+    }
+    @Override
     public void draw() {
         if (!isVisible()) return;
 

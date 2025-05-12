@@ -55,7 +55,7 @@ public class PhysicsSettingsPanel extends SettingsPanel {
                     simulationApp.updateGravity(event.getController().getValue());
                 });
 
-        createSlider("physBallMaxSpeed", "Max Ball Speed", 50, 600, settings.getBallMaxSpeed(),
+        createSlider("physicsPanel_ballMaxSpeed", "Max Ball Speed", 50, 600, settings.getBallMaxSpeed(),
                 physicsGroup, margin, 30 + CONTROL_HEIGHT + CONTROL_SPACING)
                 .onChange(event -> {
                     settings.setBallMaxSpeed(event.getController().getValue());
@@ -134,6 +134,11 @@ public class PhysicsSettingsPanel extends SettingsPanel {
                 });
     }
 
+    @Override
+    public void resetToDefaults() {
+        // Call the existing method that resets physics settings
+        resetToDefaultPhysics();
+    }
     @Override
     public void draw() {
         if (!isVisible()) return;

@@ -124,7 +124,7 @@ public class RenderController {
                 .setValue(true);
 
         // Frame rate slider
-        cp5.addSlider("frameRate")
+        cp5.addSlider("renderControllerFrameRate")
                 .setPosition(margin, 150)
                 .setSize(200, CONTROL_HEIGHT)
                 .setRange(30, 120)
@@ -149,17 +149,12 @@ public class RenderController {
                 .disableCollapse();
 
         // Recording duration slider
-        cp5.addSlider("recordingDuration")
-                .setPosition(margin, 30)
-                .setSize(200, CONTROL_HEIGHT)
-                .setRange(1, 30)
-                .setValue(recordingDuration)
-                .setLabel("Recording Duration (seconds)")
+        cp5.addButton("startRecordingCtrl")
+                .setPosition(margin, 160)
+                .setSize(200, 40)
+                .setLabel("Start Recording")
                 .setGroup(frameExportGroup)
-                .onChange(event -> {
-                    Controller c = (Controller) event.getController();
-                    recordingDuration = (int) c.getValue();
-                });
+                .onPress(event -> toggleRecording());
 
 
         // Export resolution dropdown
@@ -185,25 +180,30 @@ public class RenderController {
                 .setGroup(frameExportGroup)
                 .setValue(true);
 
-        // Start recording button
-        cp5.addButton("startRecording")
-                .setPosition(margin, 160)
-                .setSize(200, 40)
-                .setLabel("Start Recording")
-                .setGroup(frameExportGroup)
-                .onPress(event -> toggleRecording());
     }
 
     private void createRenderBuffer() {
-        renderWidth = applet.width * renderScale;
-        renderHeight = applet.height * renderScale;
-        renderBuffer = applet.createGraphics(renderWidth, renderHeight, PApplet.P2D);
+        try {
+            renderWidth = applet.width * renderScale;
+            renderHeight = applet.height * renderScale;
 
-        // Set up the render buffer
-        renderBuffer.smooth(8); // High quality anti-aliasing
-        renderBuffer.beginDraw();
-        renderBuffer.background(0);
-        renderBuffer.endDraw();
+            // Match P2D renderer with main application
+            renderBuffer = applet.createGraphics(renderWidth, renderHeight, PApplet.P2D);
+
+            // Use a lower anti-aliasing level for better performance
+            renderBuffer.smooth(2);
+            renderBuffer.beginDraw();
+            renderBuffer.background(0);
+            renderBuffer.endDraw();
+        } catch (Exception e) {
+            System.err.println("Error creating render buffer: " + e.getMessage());
+            e.printStackTrace();
+            // Fall back to no high quality mode
+            highQualityMode = false;
+            if (cp5 != null && cp5.getController("highQualityMode") != null) {
+                ((Toggle)cp5.getController("highQualityMode")).setState(false);
+            }
+        }
     }
 
     /**
@@ -241,7 +241,7 @@ public class RenderController {
         recordingFrames = true;
 
         // Update button label
-        Button recordButton = (Button) cp5.getController("startRecording");
+        Button recordButton = (Button) cp5.getController("startRecordingCtrl");
         recordButton.setLabel("Stop Recording");
         recordButton.setColorBackground(COLOR_RECORD);
 
@@ -271,7 +271,7 @@ public class RenderController {
         recordingFrames = false;
 
         // Update button label
-        Button recordButton = (Button) cp5.getController("startRecording");
+        Button recordButton = (Button) cp5.getController("startRecordingCtrl");
         recordButton.setLabel("Start Recording");
         recordButton.setColorBackground(COLOR_HEADER);
 
@@ -410,24 +410,31 @@ public class RenderController {
      * Render a frame in high quality
      */
     public void renderHighQuality() {
-        if (!highQualityMode) return;
+        if (!highQualityMode || renderBuffer == null) {
+            return;
+        }
 
-        // Set up the render buffer
-        renderBuffer.beginDraw();
-        renderBuffer.background(0);
+        try {
+            // Set up the render buffer
+            renderBuffer.beginDraw();
+            renderBuffer.background(0);
 
-        // Scale everything to match the render buffer size
-        float scaleX = (float) renderWidth / applet.width;
-        float scaleY = (float) renderHeight / applet.height;
-        renderBuffer.scale(scaleX, scaleY);
+            // Scale everything to match the render buffer size
+            float scaleX = (float) renderWidth / applet.width;
+            float scaleY = (float) renderHeight / applet.height;
+            renderBuffer.scale(scaleX, scaleY);
 
-        // Render the simulation to the buffer
-        simulationApp.drawToBuffer(renderBuffer);
+            // Render the simulation to the buffer
+            simulationApp.drawToBuffer(renderBuffer);
 
-        renderBuffer.endDraw();
+            renderBuffer.endDraw();
 
-        // Display the render buffer scaled back to window size
-        applet.image(renderBuffer, 0, 0, applet.width, applet.height);
+            // Display the render buffer scaled back to window size
+            applet.image(renderBuffer, 0, 0, applet.width, applet.height);
+        } catch (Exception e) {
+            System.err.println("Error in high quality rendering: " + e.getMessage());
+            highQualityMode = false;
+        }
     }
 
     /**

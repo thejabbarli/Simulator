@@ -5,9 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b43d347f-b62c-40a7-838c-d5201c8eac80" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/core/SimulationApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/core/SimulationApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/gui/AudioSettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/AudioSettingsPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/gui/BallSettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/BallSettingsPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/gui/EffectsSettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/EffectsSettingsPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulation/gui/GuiManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/GuiManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/gui/PhysicsSettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/PhysicsSettingsPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulation/gui/PresetManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/PresetManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/gui/RenderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/RenderController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/gui/RenderingSettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/RenderingSettingsPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/gui/SettingsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/gui/SettingsPanel.java" afterDir="false" />
@@ -70,7 +74,7 @@
       <workItem from="1746888277268" duration="5640000" />
       <workItem from="1746986305460" duration="916000" />
       <workItem from="1747044340934" duration="87000" />
-      <workItem from="1747050664853" duration="7606000" />
+      <workItem from="1747050664853" duration="11658000" />
     </task>
     <servers />
   </component>

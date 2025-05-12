@@ -146,16 +146,17 @@ public class BallSettingsPanel extends SettingsPanel {
         int previewX = sidebarWidth + margin + (applet.width - sidebarWidth) / 2 - PREVIEW_SIZE / 2;
         int previewY = 360;
 
-        applet.fill(COLOR_BACKGROUND);
+        // Clear the preview area first
+        applet.fill(0); // Black background
         applet.stroke(COLOR_HEADER);
         applet.strokeWeight(2);
         applet.rect(previewX, previewY, PREVIEW_SIZE, PREVIEW_SIZE);
 
-        // Draw preview label
+        // Draw preview label with adequate spacing
         applet.fill(COLOR_TEXT);
         applet.textAlign(PApplet.CENTER, PApplet.CENTER);
         applet.textSize(14);
-        applet.text("Ball Preview", previewX + PREVIEW_SIZE / 2, previewY - 15);
+        applet.text("Ball Preview", previewX + PREVIEW_SIZE / 2, previewY - 20);
 
         // Position preview ball in center of preview area
         previewBall.setPosition(new PVector(
@@ -166,7 +167,9 @@ public class BallSettingsPanel extends SettingsPanel {
         // Draw the ball
         applet.pushStyle();
         applet.stroke(previewBall.getColor());
-        applet.strokeWeight(previewBall.getStrokeThickness());
+        // Make sure the stroke is visible
+        float strokeWeight = Math.max(1.0f, previewBall.getStrokeThickness());
+        applet.strokeWeight(strokeWeight);
         applet.noFill();
         applet.ellipse(
                 previewBall.getPosition().x,
@@ -176,7 +179,7 @@ public class BallSettingsPanel extends SettingsPanel {
         );
         applet.popStyle();
 
-        // Show ball properties
+        // Show ball properties with adequate spacing
         String infoText = String.format(
                 "Radius: %.1f | Mass: %.1f | Stroke: %.1f",
                 previewBall.getRadius(),
@@ -187,7 +190,37 @@ public class BallSettingsPanel extends SettingsPanel {
         applet.fill(COLOR_TEXT);
         applet.textAlign(PApplet.CENTER, PApplet.CENTER);
         applet.textSize(12);
-        applet.text(infoText, previewX + PREVIEW_SIZE / 2, previewY + PREVIEW_SIZE + 15);
+        applet.text(infoText, previewX + PREVIEW_SIZE / 2, previewY + PREVIEW_SIZE + 20);
+    }
+
+    @Override
+    public void resetToDefaults() {
+        // Reset to default ball values
+        settings.setBallRadius(30f);
+        settings.setBallStroke(0.1f);
+        settings.setBallMass(1.0f);
+        settings.setBallColor(0xFFFF00FF); // Magenta
+        settings.setBallMaxSpeed(300f);
+
+        // Update UI controls
+        cp5.getController("ballRadius").setValue(settings.getBallRadius());
+        cp5.getController("ballMass").setValue(settings.getBallMass());
+        cp5.getController("ballStroke").setValue(settings.getBallStroke());
+        colorPicker.setColorValue(settings.getBallColor());
+
+        // Update preview ball
+        previewBall.setRadius(settings.getBallRadius());
+        previewBall.setMass(settings.getBallMass());
+        previewBall.setStrokeThickness(settings.getBallStroke());
+        previewBall.setColor(settings.getBallColor());
+
+        // Apply to simulation
+        simulationApp.applyBallSettings(
+                settings.getBallRadius(),
+                settings.getBallMass(),
+                settings.getBallStroke(),
+                settings.getBallColor()
+        );
     }
 
     private void randomizeBallProperties() {

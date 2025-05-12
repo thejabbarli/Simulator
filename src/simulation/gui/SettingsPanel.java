@@ -22,10 +22,11 @@ public abstract class SettingsPanel {
     protected static final int COLOR_HEADER = 0xFF00B4D8;
     protected static final int COLOR_TEXT = 0xFFEEEEEE;
     protected static final int CONTROL_HEIGHT = 24;
-    protected static final int CONTROL_SPACING = 6;
-    protected static final int GROUP_SPACING = 15;
-    protected static final int SLIDER_WIDTH = 150;
-    protected static final int TOGGLE_WIDTH = 100;
+    protected static final int CONTROL_SPACING = 15; // Increase spacing
+    protected static final int GROUP_SPACING = 25;
+    protected static final int SLIDER_WIDTH = 180;
+    protected static final int TOGGLE_WIDTH = 120;
+
 
     /**
      * Create a new settings panel
@@ -84,16 +85,41 @@ public abstract class SettingsPanel {
      * @return The created group
      */
     protected Group createControlGroup(String name, String label, int y, int width, int height) {
+        // Add more padding
         Group group = cp5.addGroup(name)
-                .setPosition(sidebarWidth + margin, y)
+                .setPosition(sidebarWidth + margin * 2, y)
                 .setWidth(width)
-                .setBackgroundHeight(height)
+                .setBackgroundHeight(height + margin * 2)
                 .setBackgroundColor(COLOR_BACKGROUND)
                 .setLabel(label)
-                .setTab(parentTab)
+                .setTab(parentTab.getName())
                 .disableCollapse();
 
+        // Add space for the group label
+        group.getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP);
+        group.getCaptionLabel().getStyle().setMarginTop(5);
+
         return group;
+    }
+    public abstract void resetToDefaults();
+
+    // In SettingsPanel.java, add this method to help with text sizing:
+    protected void drawGroupLabel(String text, float x, float y, float maxWidth) {
+        applet.fill(COLOR_TEXT);
+        applet.textAlign(PApplet.CENTER, PApplet.CENTER);
+
+        // Calculate text size to fit
+        float textSize = 14;
+        applet.textSize(textSize);
+        float textWidth = applet.textWidth(text);
+
+        // If text is too wide, reduce the size
+        if (textWidth > maxWidth) {
+            textSize = textSize * (maxWidth / textWidth) * 0.9f;
+            applet.textSize(textSize);
+        }
+
+        applet.text(text, x, y);
     }
 
     /**

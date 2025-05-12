@@ -110,6 +110,7 @@ public class GuiManager {
         presetsTab.setHeight(TAB_HEIGHT);
     }
 
+    // In GuiManager.java, add a Start Simulation button at the top of the sidebar:
     private void setupPanels() {
         // Initialize all setting panels
         panels.add(new BallSettingsPanel(applet, cp5, settings, simulationApp, ballTab, SIDEBAR_WIDTH, PANEL_MARGIN));
@@ -117,7 +118,33 @@ public class GuiManager {
         panels.add(new EffectsSettingsPanel(applet, cp5, settings, simulationApp, effectsTab, SIDEBAR_WIDTH, PANEL_MARGIN));
         panels.add(new AudioSettingsPanel(applet, cp5, settings, simulationApp, audioTab, SIDEBAR_WIDTH, PANEL_MARGIN));
         panels.add(new RenderingSettingsPanel(applet, cp5, settings, simulationApp, renderTab, SIDEBAR_WIDTH, PANEL_MARGIN));
+
+        Button startButton = cp5.addButton("startSimulationButton")
+                .setPosition(PANEL_MARGIN, TAB_HEIGHT + HEADER_HEIGHT + PANEL_MARGIN)
+                .setSize(SIDEBAR_WIDTH - PANEL_MARGIN * 2, 40)
+                .setLabel("START SIMULATION")
+                .onPress(event -> {
+                    if (!simulationApp.isSimulationStarted()) {
+                        simulationApp.startSimulation();
+                        ((Button)event.getController()).setLabel("PAUSE SIMULATION");
+                    } else {
+                        simulationApp.togglePause();
+                        ((Button)event.getController()).setLabel(
+                                simulationApp.isPaused() ? "RESUME SIMULATION" : "PAUSE SIMULATION");
+                    }
+                });
+
+        // Reset button
+        Button resetButton = cp5.addButton("resetSimulationButton")
+                .setPosition(PANEL_MARGIN, TAB_HEIGHT + HEADER_HEIGHT + PANEL_MARGIN + 50)
+                .setSize(SIDEBAR_WIDTH - PANEL_MARGIN * 2, 40)
+                .setCaptionLabel("RESET SIMULATION")
+                .onPress(event -> {
+                    simulationApp.resetSimulation();
+                    startButton.setCaptionLabel("START SIMULATION");
+                });
     }
+
 
     private void styleUI() {
         // Set global UI styles
@@ -142,17 +169,18 @@ public class GuiManager {
     /**
      * Draw the GUI components
      */
+    // In GuiManager.java, modify the draw method to improve layout:
     public void draw() {
         if (!guiVisible) return;
 
         applet.pushStyle();
 
-        // Draw sidebar background
+        // Draw sidebar background with more padding
         applet.fill(COLOR_PANEL);
         applet.noStroke();
         applet.rect(0, TAB_HEIGHT, SIDEBAR_WIDTH, applet.height - TAB_HEIGHT);
 
-        // Draw header in sidebar
+        // Draw header in sidebar with better spacing
         applet.fill(COLOR_ACCENT);
         applet.rect(0, TAB_HEIGHT, SIDEBAR_WIDTH, HEADER_HEIGHT);
         applet.fill(COLOR_TEXT);
@@ -160,14 +188,14 @@ public class GuiManager {
         applet.textAlign(PApplet.CENTER, PApplet.CENTER);
         applet.text("Simulation Controls", SIDEBAR_WIDTH / 2, TAB_HEIGHT + HEADER_HEIGHT / 2);
 
-        // Draw current panel
+        // Draw current panel with more spacing between elements
         for (SettingsPanel panel : panels) {
             if (panel.isVisible()) {
                 panel.draw();
             }
         }
 
-        // Draw preset manager and render controller if on appropriate tabs
+        // Draw preset manager and render controller with improved spacing
         if (cp5.getWindow().getCurrentTab() == presetsTab) {
             presetManager.draw();
         } else if (cp5.getWindow().getCurrentTab() == renderTab) {
