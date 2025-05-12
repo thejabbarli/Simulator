@@ -144,8 +144,11 @@ public abstract class SettingsPanel {
                 .setState(defaultValue)
                 .setPosition(x, y)
                 .setSize(TOGGLE_WIDTH, CONTROL_HEIGHT)
-                .setLabel(label)
-                .setTab(parentTab.getName());
+                .setLabel(label);
+
+        if (parentTab != null) {
+            toggle.setTab(parentTab.getName());
+        }
 
         if (group != null) {
             toggle.setGroup(group);
@@ -172,8 +175,11 @@ public abstract class SettingsPanel {
                 .setSize(SLIDER_WIDTH, 120)
                 .setItemHeight(20)
                 .setBarHeight(CONTROL_HEIGHT)
-                .setLabel(label)
-                .setTab(parentTab.getName());
+                .setLabel(label);
+
+        if (parentTab != null) {
+            dropdown.setTab(parentTab.getName());
+        }
 
         for (int i = 0; i < items.length; i++) {
             dropdown.addItem(items[i], i);
@@ -204,8 +210,11 @@ public abstract class SettingsPanel {
         Button button = cp5.addButton(name)
                 .setPosition(x, y)
                 .setSize(width, height)
-                .setLabel(label)
-                .setTab(parentTab.getName());
+                .setLabel(label);
+
+        if (parentTab != null) {
+            button.setTab(parentTab.getName());
+        }
 
         if (group != null) {
             button.setGroup(group);
@@ -213,4 +222,5 @@ public abstract class SettingsPanel {
 
         return button;
     }
+
 }

@@ -74,7 +74,7 @@ public class RenderingSettingsPanel extends SettingsPanel {
         createSlider("targetFrameRate", "Target FPS", 30, 144, 60,
                 displayGroup, margin, 160)
                 .onChange(event -> {
-                    int fps = (int) event.getController().getValue();
+                    int fps = Math.max(30, (int) event.getController().getValue());
                     applet.frameRate(fps);
                 });
 

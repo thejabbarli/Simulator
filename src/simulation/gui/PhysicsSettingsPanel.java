@@ -55,7 +55,7 @@ public class PhysicsSettingsPanel extends SettingsPanel {
                     simulationApp.updateGravity(event.getController().getValue());
                 });
 
-        createSlider("ballMaxSpeed", "Max Ball Speed", 50, 600, settings.getBallMaxSpeed(),
+        createSlider("physBallMaxSpeed", "Max Ball Speed", 50, 600, settings.getBallMaxSpeed(),
                 physicsGroup, margin, 30 + CONTROL_HEIGHT + CONTROL_SPACING)
                 .onChange(event -> {
                     settings.setBallMaxSpeed(event.getController().getValue());
@@ -112,11 +112,11 @@ public class PhysicsSettingsPanel extends SettingsPanel {
                 });
 
 
-        createSlider("shrinkRate", "Shrink Rate", 0.1f, 5, settings.getShrinkRate(),
-                bounceGroup, margin, 30 + (CONTROL_HEIGHT + CONTROL_SPACING) * 5)
+        createSlider("physBallMaxSpeed", "Max Ball Speed", 50, 600, settings.getBallMaxSpeed(),
+                physicsGroup, margin, 30 + CONTROL_HEIGHT + CONTROL_SPACING)
                 .onChange(event -> {
-                    settings.setShrinkRate(event.getController().getValue());
-                    simulationApp.updateShrinkRate(event.getController().getValue());
+                    settings.setBallMaxSpeed(event.getController().getValue());
+                    simulationApp.updateBallMaxSpeed(event.getController().getValue());
                 });
 
         // Add reset physics button

@@ -99,7 +99,8 @@ public class RenderController {
 
 
         // Render scale slider
-        cp5.addSlider("renderScale")
+        // Replace this code in the initializeUI method
+        cp5.addSlider("renderControllerScale")
                 .setPosition(margin, 70)
                 .setSize(200, CONTROL_HEIGHT)
                 .setRange(1, 4)

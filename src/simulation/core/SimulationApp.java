@@ -9,6 +9,7 @@ import simulation.config.SettingsManager;
 import simulation.effects.*;
 import simulation.gui.GuiManager;
 import simulation.rendering.BallRenderer;
+import processing.opengl.PJOGL;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -62,6 +63,9 @@ public class SimulationApp extends PApplet {
     private boolean needResize = false;
     private int newWidth = WINDOW_WIDTH;
     private int newHeight = WINDOW_HEIGHT;
+    private boolean isInitializing = true;
+    private boolean guiInitialized = false;
+
 
     /**
      * Main entry point
@@ -72,8 +76,13 @@ public class SimulationApp extends PApplet {
 
     @Override
     public void settings() {
+        // Use P2D renderer with hints
         size(WINDOW_WIDTH, WINDOW_HEIGHT, P2D);
         smooth(4);
+
+        // Instead of PJOGL.setProfile(1), we'll use this:
+        // This is a more compatible way to set OpenGL hints
+        System.setProperty("jogl.disable.openglcore", "false");
     }
 
     @Override
@@ -83,8 +92,7 @@ public class SimulationApp extends PApplet {
         initializeSettings();
         initializeSimulationComponents();
         initializeEffectSystem();
-        initializeGUI();
-        createRenderBuffer();
+
     }
 
     /**
@@ -207,30 +215,52 @@ public class SimulationApp extends PApplet {
 
     @Override
     public void draw() {
-        // Handle resize if requested
+        // Skip first frame for initialization
+        if (isInitializing) {
+            background(0);
+            isInitializing = false;
+            return;
+        }
+
+        // Initialize GUI after first frame
+        if (!guiInitialized) {
+            initializeGUI();
+            createRenderBuffer();
+            guiInitialized = true;
+        }
+
+        // Handle window resize if requested
         if (needResize) {
             surface.setSize(newWidth, newHeight);
             needResize = false;
             createRenderBuffer();
         }
 
+        // Render simulation
         if (highQualityRendering) {
             drawHighQuality();
         } else {
             drawStandard();
         }
 
-        // Draw GUI
-        guiManager.draw();
+        // Draw GUI if initialized
+        if (guiInitialized) {
+            guiManager.draw();
+        }
 
-        // Handle recording
+        // Handle frame recording
         if (recording) {
             recordFrame();
         }
 
         // Update GUI state
-        guiManager.update();
+        if (guiInitialized) {
+            guiManager.update();
+        }
     }
+
+
+
 
     /**
      * Draw using standard quality

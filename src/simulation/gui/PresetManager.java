@@ -409,9 +409,6 @@ public class PresetManager {
      * Update UI controls to match the current settings
      */
     private void updateUIFromSettings() {
-        // We need to update all UI controls to match the loaded settings
-        // This is done by each panel when it detects that settings have changed
-        // Signal to all panels that they should refresh their controls
         for (ControllerInterface<?> controller : cp5.getAll()) {
             if (controller instanceof Slider) {
                 Slider slider = (Slider) controller;
@@ -436,7 +433,6 @@ public class PresetManager {
                     case "speedBoostFactor":
                         slider.setValue(settings.getSpeedBoostFactor());
                         break;
-                    // Add more sliders as needed
                 }
             }
 
@@ -463,12 +459,12 @@ public class PresetManager {
                     case "rainbowMode":
                         toggle.setState(true); // or settings.getRainbowMode()
                         break;
-                    // Add more toggles as needed
                 }
             }
         }
-
     }
+
+
 
     /**
      * Mark the current preset as modified
